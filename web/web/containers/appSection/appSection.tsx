@@ -19,7 +19,7 @@ export default function AppSection({}: Props) {
             <Image
               fill
               src={"/images/customer_app.png"}
-              alt={"Foodyman"}
+              alt={"TymG"}
               sizes="(max-width: 768px) 600px, 1072px"
             />
           </div>
@@ -53,7 +53,7 @@ export default function AppSection({}: Props) {
             <Image
               fill
               src={"/images/vendor_app.png"}
-              alt={"Foodyman"}
+              alt={"TymG"}
               sizes="(max-width: 768px) 600px, 1072px"
             />
           </div>
@@ -87,7 +87,7 @@ export default function AppSection({}: Props) {
             <Image
               fill
               src={"/images/delivery_app.png"}
-              alt={"Foodyman"}
+              alt={"TymG"}
               sizes="(max-width: 768px) 600px, 1072px"
             />
           </div>

@@ -22,7 +22,7 @@ export default function AboutUs({}: Props) {
         <Image
           fill
           src={"/images/welcome.jpg"}
-          alt={"Foodyman"}
+          alt={"TymG"}
           sizes="(max-width: 768px) 600px, 1072px"
         />
       </div>
