@@ -1,4 +1,5 @@
 export const PROJECT_NAME = 'TymG marketplace';
+// Note: Update BASE_URL to point to your own API endpoint when you deploy your backend
 export const BASE_URL = 'https://single-api.foodyman.org';
 export const api_url = BASE_URL + '/api/v1/';
 export const api_url_admin_dashboard = BASE_URL + '/api/v1/dashboard/';
@@ -11,6 +12,7 @@ export const defaultCenter = { lat: 40.7127281, lng: -74.0060152 };
 export const VAPID_KEY =
   'BPF2UBmQ7aS14ryUSFFG0PNNYBaLlCvmsd2RHG6ndaHE6aL-_blBxQoK0KAohAS8tkbbdV_6R5RPmUWkJCVZXCM';
 export const API_KEY = 'AIzaSyBgp-Y1H1fZwwfKuneopikYQcF1Kbcs0cg';
+// Note: Update Firebase configs if you create a new Firebase project
 export const AUTH_DOMAIN = 'foodyman-single.firebaseapp.com';
 export const PROJECT_ID = 'foodyman-single';
 export const STORAGE_BUCKET = 'foodyman-single.appspot.com';
