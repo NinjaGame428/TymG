@@ -18,7 +18,6 @@ import { setUserData } from 'redux/slices/auth';
 import { fetchRestSettings, fetchSettings } from 'redux/slices/globalSettings';
 import { useTranslation } from 'react-i18next';
 import { PROJECT_NAME } from 'configs/app-global';
-import Recaptcha from 'components/recaptcha';
 import { setMenu } from 'redux/slices/menu';
 import cls from './login.module.scss';
 
@@ -52,13 +51,8 @@ const Login = () => {
   const { user } = useSelector((state) => state.auth);
 
   const [loading, setLoading] = useState(false);
-  const [recaptcha, setRecaptcha] = useState(null);
 
   const isDemo = Boolean(Number(settings?.is_demo));
-
-  const handleRecaptchaChange = (value) => {
-    setRecaptcha(value);
-  };
 
   const fetchUserSettings = (role) => {
     switch (role) {
@@ -185,14 +179,12 @@ const Login = () => {
                           placeholder={t('password')}
                         />
                       </Form.Item>
-                      <Recaptcha onChange={handleRecaptchaChange} />
                       <Form.Item className='login-input mt-4'>
                         <Button
                           type='primary'
                           htmlType='submit'
                           className={cls.loginFormButton}
                           loading={loading}
-                          disabled={!Boolean(recaptcha)}
                         >
                           {t('login')}
                         </Button>
