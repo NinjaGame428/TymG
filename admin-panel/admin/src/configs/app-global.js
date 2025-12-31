@@ -1,4 +1,4 @@
-export const PROJECT_NAME = 'Foodyman marketplace';
+export const PROJECT_NAME = 'TymG marketplace';
 export const BASE_URL = 'https://single-api.foodyman.org';
 export const api_url = BASE_URL + '/api/v1/';
 export const api_url_admin_dashboard = BASE_URL + '/api/v1/dashboard/';
