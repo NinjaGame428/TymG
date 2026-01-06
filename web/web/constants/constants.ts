@@ -5,6 +5,7 @@ export const ADMIN_PANEL_URL = process.env.NEXT_PUBLIC_ADMIN_PANEL_URL;
 export const API_URL = BASE_URL + "/api/v1/";
 export const IMAGE_URL = BASE_URL + "/storage/images/";
 export const MAP_API_KEY = process.env.NEXT_PUBLIC_MAP_API_KEY;
+export const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 export const G_TAG = process.env.NEXT_PUBLIC_GOOGLE_MEASUREMENT_ID;
 export const EXTERNAL_PAYMENTS = [
   "stripe",

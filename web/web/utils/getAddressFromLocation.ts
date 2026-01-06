@@ -1,12 +1,23 @@
 import axios from "axios";
-import { MAP_API_KEY } from "constants/constants";
+import { MAPBOX_TOKEN } from "constants/constants";
 
 export async function getAddressFromLocation(latlng: string) {
-  let params = { latlng, key: MAP_API_KEY };
+  const [lat, lng] = latlng.split(",");
+  const mapboxToken = MAPBOX_TOKEN || "";
+
+  if (!mapboxToken) {
+    return "not found";
+  }
 
   return axios
-    .get(`https://maps.googleapis.com/maps/api/geocode/json`, { params })
-    .then(({ data }) => data.results[0]?.formatted_address)
+    .get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json`, {
+      params: {
+        access_token: mapboxToken,
+      },
+    })
+    .then(({ data }) => {
+      return data.features?.[0]?.place_name || "not found";
+    })
     .catch((error) => {
       console.log(error);
       return "not found";

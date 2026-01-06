@@ -1,9 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect } from "react";
+import { Marker, useMap } from "react-map-gl";
 import cls from "./branchMap.module.scss";
 import MapContainer from "containers/map/mapContainer";
 import { IShop } from "interfaces";
 import { Skeleton, Tooltip } from "@mui/material";
+import mapboxgl from "mapbox-gl";
 
 type MarkerProps = {
   data: IShop;
@@ -13,9 +15,9 @@ type MarkerProps = {
   handleSubmit: (id: string) => void;
 };
 
-const Marker = ({ data, index, handleSubmit }: MarkerProps) => {
+const CustomMarker = ({ data, lat, lng, index, handleSubmit }: MarkerProps) => {
   return (
-    <div className={cls.marker}>
+    <Marker longitude={lng} latitude={lat} anchor="center">
       <Tooltip title={data.translation?.title} arrow>
         <button
           className={cls.mark}
@@ -24,8 +26,33 @@ const Marker = ({ data, index, handleSubmit }: MarkerProps) => {
           {index}
         </button>
       </Tooltip>
-    </div>
+    </Marker>
   );
+};
+
+const FitBounds = ({
+  locations,
+}: {
+  locations: Array<{ lat: number; lng: number }>;
+}) => {
+  const { current: map } = useMap();
+
+  useEffect(() => {
+    if (!map || locations.length === 0) return;
+
+    const bounds = locations.reduce(
+      (bounds, loc) => {
+        return bounds.extend([loc.lng, loc.lat]);
+      },
+      new mapboxgl.LngLatBounds()
+    );
+
+    map.fitBounds(bounds, {
+      padding: { top: 50, bottom: 50, left: 50, right: 50 },
+    });
+  }, [map, locations]);
+
+  return null;
 };
 
 type Props = {
@@ -49,23 +76,12 @@ export default function BranchMap({
     [data]
   );
 
-  const handleApiLoaded = (map: any, maps: any) => {
-    let bounds = new maps.LatLngBounds();
-    for (var i = 0; i < markers.length; i++) {
-      bounds.extend(markers[i]);
-    }
-    map.fitBounds(bounds);
-  };
-
   return (
     <div className={cls.wrapper}>
       {!isLoading ? (
-        <MapContainer
-          yesIWantToUseGoogleMapApiInternals
-          onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
-        >
+        <MapContainer>
           {markers.map((item, idx) => (
-            <Marker
+            <CustomMarker
               key={idx}
               lat={item.lat}
               lng={item.lng}
@@ -74,6 +90,7 @@ export default function BranchMap({
               handleSubmit={handleSubmit}
             />
           ))}
+          {markers.length > 0 && <FitBounds locations={markers} />}
         </MapContainer>
       ) : (
         <Skeleton variant="rectangular" className={cls.shimmer} />
