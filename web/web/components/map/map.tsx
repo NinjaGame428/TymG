@@ -192,8 +192,8 @@ export default function Map({
         {shops.map((item, idx) => (
           <ShopMarker
             key={`marker-${idx}`}
-            lat={item.location?.latitude || 0}
-            lng={item.location?.longitude || 0}
+            lat={Number(item.location?.latitude) || 0}
+            lng={Number(item.location?.longitude) || 0}
             shop={item}
             onClick={() => {
               if (handleMarkerClick) handleMarkerClick(item);

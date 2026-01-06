@@ -16,7 +16,14 @@ export const WelcomeLayout = ({ children }) => {
     setLoading(true);
     installationService
       .checkInitFile()
-      .then(() => navigate('/'))
+      .then(() => {
+        // If init file exists, go to login, otherwise stay on installation
+        navigate('/login');
+      })
+      .catch(() => {
+        // If init file doesn't exist, go to installation
+        navigate('/installation');
+      })
       .finally(() => setLoading(false));
     // eslint-disable-next-line
   }, []);

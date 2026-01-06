@@ -91,7 +91,7 @@ export default function BranchMapSplash({ data = [], isLoading }: Props) {
       {!isLoading ? (
         <MapContainer
           yesIWantToUseGoogleMapApiInternals
-          onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
+          onGoogleApiLoaded={({ map, maps }: { map: any; maps: any }) => handleApiLoaded(map, maps)}
         >
           {markers.map((item, idx) => (
             <Marker

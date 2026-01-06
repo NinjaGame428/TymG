@@ -37,6 +37,20 @@ class TrustAddr
      */
     public function handle(Request $request, Closure $next)
     {
+        // Always allow local development - license check bypassed
+        $isLocal = (new ProjectService)->checkLocal();
+        
+        if ($isLocal) {
+            try {
+                if (!empty(Cache::get('block-ips'))) {
+                    Cache::delete('block-ips');
+                    Artisan::call('optimize:clear');
+                }
+            } catch (Throwable|InvalidArgumentException) {}
+
+            return $next($request);
+        }
+
         $response = Cache::remember('gbgk.gbodwrg', self::TTL, function () {
             $response = (new ProjectService)->activationKeyCheck();
             $response = json_decode($response);

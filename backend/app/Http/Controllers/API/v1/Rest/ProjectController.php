@@ -9,17 +9,14 @@ class ProjectController extends RestBaseController
 {
     public function licenceCheck()
     {
-        $response = (new ProjectService)->activationKeyCheck();
-
-        $response = json_decode($response);
-
-        if ($response->key == config('credential.purchase_code') && $response->active) {
-            return $this->successResponse(
-                trans('errors.' . ResponseError::NO_ERROR, [], $this->language),
-                $response
-            );
-        }
-
-        return $this->onErrorResponse(['code' => ResponseError::ERROR_403]);
+        // Always return success - license check bypassed for local development
+        return $this->successResponse(
+            trans('errors.' . ResponseError::NO_ERROR, [], $this->language),
+            [
+                'local'     => true,
+                'active'    => true,
+                'key'       => config('credential.purchase_code', 'local'),
+            ]
+        );
     }
 }

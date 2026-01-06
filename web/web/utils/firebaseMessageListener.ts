@@ -1,8 +1,9 @@
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
-import app from "services/firebase";
+import app from "utils/firebase";
 import { VAPID_KEY } from "constants/config";
 import profileService from "services/profile";
 import { IPushNotification } from "interfaces";
+import { getApps } from "firebase/app";
 
 type INotification = {
   notification?: IPushNotification;
@@ -11,7 +12,14 @@ type INotification = {
 export const getNotification = (
   setNotification: (data?: IPushNotification) => void
 ) => {
-  const messaging = getMessaging(app);
+  // Check if Firebase is properly initialized
+  if (getApps().length === 0 || !app) {
+    console.error("Firebase is not initialized");
+    return;
+  }
+
+  try {
+    const messaging = getMessaging(app);
   getToken(messaging, { vapidKey: VAPID_KEY })
     .then((currentToken) => {
       if (currentToken) {
@@ -32,6 +40,9 @@ export const getNotification = (
       }
     })
     .catch((err) => {
-      console.log("An error occurred while retrieving token. ", err);
+      console.error("An error occurred while retrieving token. ", err);
     });
+  } catch (err) {
+    console.error("Failed to initialize Firebase messaging:", err);
+  }
 };

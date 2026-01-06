@@ -20,6 +20,16 @@ class LanguageSeeder extends Seeder
                 'locale' => 'en',
                 'title' => 'English',
                 'default' => 1,
+                'active' => 1,
+                'backward' => 0,
+            ],
+            [
+                'id' => 2,
+                'locale' => 'fr',
+                'title' => 'French',
+                'default' => 0,
+                'active' => 1,
+                'backward' => 0,
             ]
         ];
 

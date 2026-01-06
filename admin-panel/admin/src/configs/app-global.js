@@ -1,6 +1,6 @@
 export const PROJECT_NAME = 'TymG marketplace';
 // Note: Update BASE_URL to point to your own API endpoint when you deploy your backend
-export const BASE_URL = 'https://single-api.foodyman.org';
+export const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3004';
 export const api_url = BASE_URL + '/api/v1/';
 export const api_url_admin_dashboard = BASE_URL + '/api/v1/dashboard/';
 export const IMG_URL = '';

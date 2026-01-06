@@ -27,6 +27,15 @@ class CurrencySeeder extends Seeder
                 'default' => 1,
                 'active' => 1,
                 'deleted_at' => null
+            ],
+            [
+                'id' => 3,
+                'symbol' => 'CA$',
+                'title' => 'CAD',
+                'rate' => 1.0,
+                'default' => 0,
+                'active' => 1,
+                'deleted_at' => null
             ]
         ];
 
