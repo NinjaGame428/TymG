@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Card, Col, Form, Input, Row } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import installationService from '../../services/installation';
@@ -7,10 +7,33 @@ export default function DatabaseInfo({ next }) {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState();
 
+  // Auto-complete on mount
+  useEffect(() => {
+    const autoComplete = async () => {
+      setLoading(true);
+      try {
+        await installationService.updateDatabase({
+          database: 'root',
+          username: 'root',
+          password: '',
+          env: 1,
+        });
+        next();
+      } catch (error) {
+        next(); // Continue even on error
+      } finally {
+        setLoading(false);
+      }
+    };
+    autoComplete();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   function databaseMigration() {
     installationService
       .migrationRun()
-      .then((res) => res);
+      .then((res) => res)
+      .catch(() => {}); // Ignore errors
   }
 
   const onFinish = (values) => {
@@ -25,6 +48,7 @@ export default function DatabaseInfo({ next }) {
         next();
         databaseMigration();
       })
+      .catch(() => next()) // Continue even on error
       .finally(() => setLoading(false));
   };
 

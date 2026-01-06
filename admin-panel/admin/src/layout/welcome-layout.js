@@ -13,18 +13,8 @@ export const WelcomeLayout = ({ children }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
-    installationService
-      .checkInitFile()
-      .then(() => {
-        // If init file exists, go to login, otherwise stay on installation
-        navigate('/login');
-      })
-      .catch(() => {
-        // If init file doesn't exist, go to installation
-        navigate('/installation');
-      })
-      .finally(() => setLoading(false));
+    // Skip installation check - always go to login
+    navigate('/login');
     // eslint-disable-next-line
   }, []);
 

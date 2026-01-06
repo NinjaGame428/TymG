@@ -10,9 +10,7 @@ export const PathLogout = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    installationService.checkInitFile().catch(() => {
-      navigate('/welcome');
-    });
+    // Skip installation check - allow login page to load
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

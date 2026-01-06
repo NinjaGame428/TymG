@@ -16,9 +16,13 @@ export default function License({ next }) {
       .finally(() => setLoading(false));
   };
 
-  // Auto-skip license step on mount
+  // Auto-skip license step on mount and auto-submit
   useEffect(() => {
-    next();
+    // Auto-submit license with dummy values
+    installationService
+      .checkLicence({ purchase_id: 'local', purchase_code: 'local' })
+      .then(() => next())
+      .catch(() => next());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

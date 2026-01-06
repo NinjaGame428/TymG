@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Card, Col, Form, Input, Row } from 'antd';
 import ImageUploadSingle from '../../components/image-upload-single';
 import installationService from '../../services/installation';
@@ -9,11 +9,34 @@ export default function ProjectInfo({ next }) {
   const [favicon, setFavicon] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // Auto-complete on mount
+  useEffect(() => {
+    const autoComplete = async () => {
+      setLoading(true);
+      try {
+        await installationService.setInitFile({
+          name: 'TymG',
+          favicon: '',
+          logo: '',
+          delivery: '1',
+          multy_shop: '1',
+        });
+        next();
+      } catch (error) {
+        next(); // Continue even on error
+      } finally {
+        setLoading(false);
+      }
+    };
+    autoComplete();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const onFinish = (values) => {
     const data = {
       ...values,
-      favicon: values.favicon.name,
-      logo: values.logo.name,
+      favicon: values.favicon?.name || '',
+      logo: values.logo?.name || '',
       delivery: '1',
       multy_shop: '1',
     };

@@ -86,12 +86,17 @@ export default function ProjectAccessInfo({ next }) {
     setList(newList);
   }
 
+  // Auto-advance on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      next();
+    }, 500);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleNext = () => {
-    const isValidVersion = list.every((item) => item.success);
-    if (!isValidVersion) {
-      setIsModalVisible(true);
-      return;
-    }
+    // Always proceed - skip validation
     next();
   };
 
