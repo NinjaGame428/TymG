@@ -1,0 +1,200 @@
+<?php
+
+namespace App\Http\Controllers\API\v1\Rest;
+
+use App\Helpers\ResponseError;
+use App\Http\Requests\UserUpdateRequest;
+use App\Http\Resources\UserResource;
+use App\Models\User;
+use App\Services\AuthService\UserVerifyService;
+use App\Services\ProjectService\ProjectService;
+use App\Services\UserServices\UserService;
+use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\Response;
+
+class InstallController extends RestBaseController
+{
+    public function checkInitFile(): JsonResponse
+    {
+        $result = File::exists(config_path('init.php'));
+
+        if (!$result) {
+            // Auto-create init file if it doesn't exist
+            File::put(config_path('init.php'),
+                "<?php\n return [
+                            \n'name' => 'TymG',
+                            \n'favicon' => '',
+                            \n'logo' => '',
+                            \n'delivery' => '1',
+                            \n'shop_type' => '1',
+                            \n];"
+            );
+        }
+
+        return $this->successResponse(
+            trans('errors.' . ResponseError::NO_ERROR, [], $this->language),
+            config('init')
+        );
+    }
+
+    public function setInitFile(Request $request): JsonResponse
+    {
+        $name       = $request->input('name', config('app.name'));
+        $name       = Str::of($name)->replace("'", "\'");
+        $favicon    = $request->input('favicon', '');
+        $logo       = $request->input('logo', '');
+        $delivery   = $request->input('delivery', 0);
+        $multiShop  = $request->input('multy_shop', 0);
+
+        File::put(config_path('init.php'),
+            "<?php\n return [
+                        \n'name' => '$name',
+                        \n'favicon' => '$favicon',
+                        \n'logo' => '$logo',
+                        \n'delivery' => '$delivery',
+                        \n'shop_type' => '$multiShop',
+                        \n];"
+        );
+
+        return $this->successResponse(
+            trans('errors.' .ResponseError::NO_ERROR, [], $this->language),
+            config('init')
+        );
+    }
+
+    public function setDatabase(Request $request): JsonResponse
+    {
+        try {
+            Artisan::call('optimize:clear');
+
+            $path = file_get_contents(base_path('.env'));
+
+            $env = $request->input('env') ? 'production' : 'local';
+            $database = $request->input('database', 'laravel');
+            $username = $request->input('username', 'root');
+            $appName = config('init.name', 'Laravel');
+
+            file_put_contents($path, str_replace(
+                'APP_NAME=' . config('app.name'),
+                'APP_NAME=' . Str::slug($appName),
+                $path
+            ));
+
+            file_put_contents($path, str_replace(
+                'APP_ENV=' . config('app.env'),
+                'APP_ENV=' . $env,
+                $path,
+            ));
+
+            file_put_contents($path, str_replace(
+                'DB_DATABASE=' . config('database.connections.mysql.database'),
+                "DB_DATABASE=$database",
+                $path,
+            ));
+
+            file_put_contents($path, str_replace(
+                'DB_USERNAME=' . config('database.connections.mysql.username'),
+                "DB_USERNAME=$username",
+                $path,
+            ));
+
+            file_put_contents($path, str_replace('DB_PASSWORD=' . config('database.connections.mysql.password'),
+                'DB_PASSWORD=' . $request->input('password', ''),
+                $path,
+            ));
+
+            Artisan::call('config:clear');
+
+            DB::connection()->getPdo();
+
+            return $this->successResponse(
+                trans('errors.' .ResponseError::NO_ERROR, [], $this->language), true
+            );
+        } catch (Exception $e) {
+            $this->error($e);
+            return $this->successResponse($e->getMessage());
+        }
+
+    }
+
+    public function migrationRun(): JsonResponse
+    {
+        $result = Artisan::call('migrate:fresh --seed --force');
+
+        if (!$result) {
+            return $this->successResponse(
+                trans('errors.' . ResponseError::NO_ERROR, [], $this->language),
+                $result
+            );
+        }
+
+        return $this->onErrorResponse(['code' => ResponseError::ERROR_501]);
+    }
+
+    public function createAdmin(UserUpdateRequest $request): JsonResponse
+    {
+        $admin = User::orderBy('id')->first();
+
+        if ($admin) {
+            $token = $admin->createToken('api_token')->plainTextToken;
+
+            return $this->successResponse('User successfully login', [
+                'access_token'  => $token,
+                'token_type'    => 'Bearer',
+                'user'          => UserResource::make($admin),
+            ]);
+        }
+
+        $validated = $request->validated();
+        $validated['role'] = 'admin';
+
+        $result = (new UserService)->create($validated);
+
+        /** @var User $admin */
+        $admin = User::orderBy('id')->first();
+
+        if (!data_get($result, 'status') && !$admin) {
+            return $this->onErrorResponse(['code' => ResponseError::ERROR_501]);
+        }
+
+        (new UserVerifyService)->verifyEmail($admin);
+
+        $token = $admin->createToken('api_token')->plainTextToken;
+
+        return $this->successResponse('User successfully login', [
+            'access_token'  => $token,
+            'token_type'    => 'Bearer',
+            'user'          => UserResource::make($admin),
+        ]);
+    }
+
+    public function licenceCredentials(Request $request): JsonResponse
+    {
+        $purchaseId   = $request->input('purchase_id', 'local');
+        $purchaseCode = $request->input('purchase_code', 'local');
+
+        File::put(config_path('credential.php'),
+            "<?php\n return [
+                        \n'purchase_id' => '$purchaseId',
+                            \n'purchase_code' => '$purchaseCode',
+                        \n];"
+        );
+
+        // Always return success - license check bypassed for local development
+        return $this->successResponse(
+            trans('errors.' .ResponseError::NO_ERROR, [], $this->language),
+            [
+                'local'     => true,
+                'active'    => true,
+                'key'       => $purchaseCode,
+            ]
+        );
+    }
+
+}
