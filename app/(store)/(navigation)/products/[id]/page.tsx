@@ -33,7 +33,7 @@ export const generateMetadata = async ({
     },
     appLinks: {
       ios: {
-        url: `https://uzmart.org/producuts/${data.uuid}`,
+        url: `https://tymg.org/producuts/${data.uuid}`,
         app_store_id: "com.gshop",
       },
       android: {
@@ -41,7 +41,7 @@ export const generateMetadata = async ({
         app_name: "com.gshop",
       },
       web: {
-        url: "https://uzmart.vercel.app/main",
+        url: "https://tymg.vercel.app/main",
         should_fallback: false,
       },
     },
