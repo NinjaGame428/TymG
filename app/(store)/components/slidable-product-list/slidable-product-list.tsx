@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
 import useSettingsStore from "@/global-store/settings";
 import dynamic from "next/dynamic";
+import { formatTranslationKey } from "@/utils/format-translation-key";
 
 const Empty = dynamic(() =>
   import("@/components/empty").then((component) => ({ default: component.Empty }))
@@ -75,12 +76,16 @@ export const SlidableProductList = ({
     []
   );
 
+  const translatedTitle = title ? t(title) : "";
+  // If translation returns the same key (translation not found), format it
+  const displayTitle = translatedTitle === title ? formatTranslationKey(title) : translatedTitle;
+
   return (
     <>
       {!!title && (
         <ListHeader
           extra={extra}
-          title={t(title)}
+          title={displayTitle}
           link={
             link
               ? `${link}${queryParams.toString() ? `?${queryParams.toString()}` : ""}`

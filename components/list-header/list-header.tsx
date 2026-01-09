@@ -4,6 +4,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { formatTranslationKey } from "@/utils/format-translation-key";
 
 interface ListHeaderProps {
   title: string;
@@ -21,6 +22,10 @@ export const ListHeader = ({
   marginBottom = true,
 }: ListHeaderProps) => {
   const { t } = useTranslation();
+  const translatedTitle = t(title);
+  // If translation returns the same key (translation not found), format it
+  const displayTitle = translatedTitle === title ? formatTranslationKey(title) : translatedTitle;
+  
   return (
     <div
       className={clsx(
@@ -30,7 +35,7 @@ export const ListHeader = ({
       )}
     >
       <div className={clsx("flex items-center gap-3")}>
-        <span className={clsx("md:text-[26px] text-xl font-semibold")}>{title}</span>
+        <span className={clsx("md:text-[26px] text-xl font-semibold")}>{displayTitle}</span>
         {extra}
       </div>
       {!!link && (
